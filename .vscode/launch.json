@@ -1,0 +1,16 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "factoriomod",
+      "request": "launch",
+      "name": "Factorio Mod Debug jan1i3 PC 1",
+      "factorioPath": "C:/ProgramsManual/Factorio/Modding/bin/x64/factorio.exe",
+      "dataPath": "C:/ProgramsManual/Factorio/Modding/data",
+      "modsPath": "C:/ProgramsManual/Factorio/Modding/mods"
+    }
+  ]
+}
