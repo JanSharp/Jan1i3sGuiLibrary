@@ -1,7 +1,7 @@
 
-local gui_handler = require("lualib.gui.gui-handler")
-local class_names = require("lualib.gui.basic-class-names")
-local event_name_map = require("basic-class-event-map")
+local gui_handler = require("__Jan1i3sGuiLibrary__/gui-handler")
+local class_names = require("__Jan1i3sGuiLibrary__/basic-class-names")
+local event_name_map = require("__Jan1i3sGuiLibrary__/basic-class-event-map")
 
 local all_full_event_names = {}
 local all_fuller_event_names = {}

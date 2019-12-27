@@ -1,6 +1,6 @@
 
-local class_names = require("basic-class-names")
-local event_names = require("event-names")
+local class_names = require("__Jan1i3sGuiLibrary__/basic-class-names")
+local event_names = require("__Jan1i3sGuiLibrary__/event-names")
 
 -- note: this list might not be complete
 return {

@@ -1,5 +1,7 @@
 
-local event_handler = require("event_handler")
+-- https://github.com/stevedonovan/LDoc
+
+local consts = require("__Jan1i3sGuiLibrary__/consts")
 
 local gui_handler = {} -- return value
 local classes = {}
@@ -7,7 +9,18 @@ local cached_class_events = {}
 local conditional_cached_class_events = {}
 local event_handlers = {}
 
-local event_names = require("lualib.gui.event-names")
+local globals = {}
+setmetatable(globals, {
+  __index = function(t, k)
+    global.__gui_handler = global.__gui_handler or {
+      instances = {},
+    }
+    globals = global.__gui_handler
+    return globals[k]
+  end
+})
+
+local event_names = require("__Jan1i3sGuiLibrary__/event-names")
 for _, event_name in pairs(event_names) do
   event_handlers[event_name] = {}
 end
@@ -54,8 +67,7 @@ local function create_base(parent_element, parent, class_name, name, parent_pass
   local class = classes[class_name]
   if not class then error("No class with the 'class_name' \"" .. class_name .. "\" registered.") end -- debug
   local inst, passed_data = class.create(...)
-  local instances = global.gui_handler.instances
-  instances[#instances+1] = inst
+  local instances = globals.instances
   setmetatable(inst, class)
 
   local children = inst.children
@@ -65,6 +77,7 @@ local function create_base(parent_element, parent, class_name, name, parent_pass
   inst.class_name = class_name
   inst.name = name
   inst.elem = parent_element.add(inst)
+  instances[inst.elem.index] = inst
   inst.parent = parent
   if passed_data then
     for k, v in pairs(passed_data) do
@@ -75,13 +88,13 @@ local function create_base(parent_element, parent, class_name, name, parent_pass
   if parent_pass_count > 0 then
     local left = parent_pass_count
     local p_parent = parent
-    while p_parent and left > 0 do
+    while left > 0 do
       left = left - 1
       p_parent = p_parent.parent
     end
     inst.passed_parent = p_parent -- passed_parent is the like the main parent inst
 
-    if parent then
+    if name then
       p_parent[name] = inst -- makes inst directly accessable on the passed_parent as well
     end
   else
@@ -188,7 +201,7 @@ end
 ---@param class_name string
 ---@param name string | nil
 ---@return GuiClassInst
-local function add_child(parent, class_name, name, ...)
+function gui_handler.add_child(parent, class_name, name, ...)
   return add_child_int(parent, class_name, name, 0, ...) -- it's a tail call, so no big deal
 end
 
@@ -210,7 +223,7 @@ end
 ---@param parent GuiClassInst
 ---@param child GuiClassInstChildDefinition
 ---@return GuiClassInst
-local function add_child_table(parent, child)
+function gui_handler.add_child_definition(parent, child)
   return add_child_int(
     parent,
     child.class_name,
@@ -222,7 +235,7 @@ end
 --- calls add_child(parent, class_name, name, ...) for each child in children.
 ---@param parent GuiClassInst
 ---@param children GuiClassInstChildDefinition[]
-local function add_children(parent, children)
+function gui_handler.add_children(parent, children)
   for _, child in pairs(children) do
     add_child_int(parent, child.class_name, child.name, child.parent_pass_count or 0, table.unpack(child))
   end
@@ -235,7 +248,7 @@ local function destroy_recursive(inst)
   for _, child in pairs(inst.children) do
     destroy_recursive(child)
   end
-  global.gui_handler.instances[inst.elem.index] = nil
+  globals.instances[inst.elem.index] = nil
   remove_event_handlers(inst)
   local func = inst.on_destroy
   if func then func(inst) end
@@ -256,6 +269,7 @@ function gui_handler.destroy(inst)
     if name then -- has name, easy to remove
       parent[name] = nil
       parent.children[name] = nil
+      inst.passed_parent[name] = nil
     else -- no name, have to find it the hard way
       local children = parent.children
       for i = 1, #children do
@@ -289,7 +303,7 @@ end
 --- this means the following functions will also exist on the class:  
 ---   
 --- add(parent, class_name, name, ...)  
---- add_table(parent, child)  
+--- add_definition(parent, child)  
 --- add_children(parent, children)  
 --- destroy(inst)  
 --- got_destroyed(inst)
@@ -323,11 +337,11 @@ function gui_handler.register_class(class)
   end
 
   -- these functions will be directly accessable on the instances, because metatables
-  class.add = add_child
-  class.add_table = add_child_table
-  class.add_children = add_children
+  class.add = gui_handler.add_child
+  class.add_definition = gui_handler.add_child_definition
+  class.add_children = gui_handler.add_children
   class.destroy = gui_handler.destroy
-  class.got_destroyed = destroy_recursive -- see gui_handler.got_destroyed
+  class.got_destroyed = gui_handler.got_destroyed
 end
 
 --- calls register_class(class) for each class in classes
@@ -340,20 +354,22 @@ end
 
 
 do -- event handlers
-  local lib = {}
-
-  function lib.on_init()
-    global.gui_handler = {
-      instances = {},
-    }
-  end
-
-  function lib.on_load()
-    for _, inst in pairs(global.gui_handler.instances) do
-      add_event_handlers(inst)
-      setmetatable(inst, classes[inst.class_name])
+  local interface_index = 1
+  for interface_name, _ in pairs(remote.interfaces) do
+    local start, stop = string.find(interface_name, consts.client_interface_name_id)
+    if start == 1 and stop == string.len(interface_name) then
+      interface_index = interface_index + 1
     end
   end
+
+  remote.add_interface("__" .. consts.modname .. "_" .. interface_index, {
+    [consts.client_funcs.on_load] = function()
+      for _, inst in pairs(globals.instances) do
+        add_event_handlers(inst)
+        setmetatable(inst, classes[inst.class_name])
+      end
+    end,
+  })
 
   for _, event_name in pairs(event_names) do
     local handler_name = "on_" .. event_name -- that way concatenation only happens once -> on startup
@@ -370,121 +386,18 @@ do -- event handlers
       end
     end)
   end
-
-  event_handler.add_lib(lib)
 end
 
 return gui_handler
 
 
+-- https://github.com/jan1i3/Jan1i3sGuiLibrary/wiki/Data-Structures
 
 ---@class GuiClassInstDefinition
---[[
-  {
-    type = string, -- see basic-class-names.lua
-
-    children = {
-      GuiClassInsstChildDefinition,
-      ...
-      -- before LuaGuiElement.add(...) get's called, this table will be removed from the GuiClassInstDefinition
-      -- this is to make dealing with circular references easier (basically don't worry about them inside children).
-      -- afterwards, for every item add_child_table(parent, child) will be called
-      -- where parent = inst
-      -- and child = the respective GuiClassInsstChildDefinition
-    },
-
-    elem_mods = {
-      [string] = any, -- after the inst.elem has been created, for every
-      ... -- item in this list inst.elem[key] = value will be executed
-    },
-    style_mods = {
-      [string] = any, -- just like elem_mods, but for inst.elem.style
-      ...
-    },
-
-    [any] = any,
-    ...
-    -- this table will be passed to the LuaGuiElement.add(...) function
-    -- so any parameters dependent on the type will be used by the api
-    -- every other key-value pair will also persist in the GuiClassInst
-  }
-]]
-
-
 ---@class GuiClassInstChildDefinition
---[[
-  {
-    class_name = string,
-    name = nil | string,
-    parent_pass_count = nil | integer,
-
-    -- every continuous integer key starting at 1 ascending will be passed to GuiClass.create(...) in that order
-  }
-]]
-
-
 ---@class GuiClassInst
---[[
-  {
-    class_name = string,
-    name = nil | string,
-    parent = nil | GuiClassInst,
-    children = {
-      [string] = GuiClassInst, -- all named children
-      ...
-      [integer] = GuiClassInst, -- all unnamed children
-      ...
-    },
-    elem = LuaGuiElement,
-
-    [string] = GuiClassInst, -- all named children
-    ...
-
-    [any] = any,
-    ...
-    -- everything that was in the GuiClassinstDefinition
-    -- plus the "passed_data", which is the optional second return value of GuiClass.create(...)
-  }
-]]
-
-
 ---@class GuiClassDefinition
---[[
-  {
-    class_name = string, -- unique
-    create = function(...) -> (GuiClassInstDefinition, nil | {[any] = any, ...}),
-    -- called whenever a new instance of the class gets created
-    -- the second return value simply contains data that will end up in the GuiClassInst
-    -- this is required whenever a value cannot be passed the the LuaGuiElement.add function,
-    -- like when having circular references
-
-    on_elem_created = function(self),
-    on_create = function(self),
-
-    ["on_" .. event_name] = function(self, event), -- event handlers. on_click would be one
-
-    [any] = any, -- you can throw anything into this table, remember it'll be a metatable for GuiClassInst s
-    ...
-  }
-]]
-
-
 ---@class GuiClass
---[[
-  {
-    -- <everything that was in the GuiClassDefinition used to create the GuiClass>
-
-    __index = GuiClass, -- self
-
-    -- see respective functions for intelisense
-    add = function(parent, class_name, name, ...),
-    add_table = function(parent, child),
-    add_children = function(parent, children),
-    destroy = function(inst),
-    got_destroyed = function(inst),
-  }
-]]
-
 
 ---@class LuaGuiElement
 -- api LuaObject
@@ -506,7 +419,7 @@ local classes = {
   }
 }
 
-global.gui_handler = {
+globals = {
   [event_name] = {
     [gui_element_index] = {
       class_name = (string),
@@ -519,7 +432,7 @@ global.gui_handler = {
 }
 
 update:
-global.gui_handler = {
+globals = {
   instances = [
     <class inst>,
     ...
