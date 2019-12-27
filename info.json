@@ -1,13 +1,13 @@
 {
   "name": "Jan1i3sGuiLibrary",
-  "version": "0.0.1",
+  "version": "0.17.1",
   "factorio_version": "0.17",
   "title": "Jan1i3's Gui Library",
   "author": "jan1i3",
   "contact": "jan.mischak@kstp.at",
   "homepage": "https://github.com/jan1i3/Jan1i3sGuiLibrary",
-  "description": "A Gui Helper library.",
+  "description": "A Gui Helper library.\nRead the wiki (at the homepage) for more info.",
   "dependencies": [
-    "base >= 0.17.0"
+    
   ]
 }
