@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.2
+Date: 2019.12.28
+  Minor Features:
+    - Add name_for_events for basic classes, enabling multiple basic class children
+      to use the same handler function of the passed_parent's class.
+  Changes:
+    - Add check in on_load if the class of every inst still exists
+      and throw a proper error if it does not
+  Info:
+    - Improve in-game mod description
+---------------------------------------------------------------------------------------------------
 Version: 0.17.1
 Date: 2019.12.27
   Info:

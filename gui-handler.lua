@@ -117,7 +117,7 @@ local function create_base(parent_element, parent, class_name, name, parent_pass
     end
   end
 
-  local on_elem_created = inst.on_elem_created
+  local on_elem_created = class.on_elem_created
   if on_elem_created then on_elem_created(inst) end
 
   add_event_handlers(inst)
@@ -128,7 +128,7 @@ local function create_base(parent_element, parent, class_name, name, parent_pass
     end
   end
 
-  local on_create = inst.on_create
+  local on_create = class.on_create
   if on_create then on_create(inst) end
 
   return inst
@@ -365,8 +365,10 @@ do -- event handlers
   remote.add_interface("__" .. consts.modname .. "_" .. interface_index, {
     [consts.client_funcs.on_load] = function()
       for _, inst in pairs(globals.instances) do
+        local class = classes[inst.class_name]
+        if not class then error("Missing gui class '" .. inst.class_name .. "'. Please register all classes before on_load and make sure migration is working properly.") end
+        setmetatable(inst, class)
         add_event_handlers(inst)
-        setmetatable(inst, classes[inst.class_name])
       end
     end,
   })
