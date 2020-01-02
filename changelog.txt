@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.3
+Date: 2019.12.31
+  Info:
+    - Remove contact from info.json
+    - Rename mod from Jan1i3's Gui Library to JanSharp's Gui Library
+      (Creating new mod and deprecating previous one)
+---------------------------------------------------------------------------------------------------
 Version: 0.17.2
 Date: 2019.12.28
   Minor Features:

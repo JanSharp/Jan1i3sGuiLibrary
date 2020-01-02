@@ -1,7 +1,7 @@
 
 pcall(require, "__debugadapter__/debugadapter.lua")
 
-local consts = require("__Jan1i3sGuiLibrary__/consts")
+local consts = require("__JanSharpsGuiLibrary__/consts")
 
 for _, func_name in pairs(consts.client_funcs) do
   script[func_name](function()

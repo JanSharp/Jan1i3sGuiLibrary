@@ -1,4 +1,4 @@
-# Jan1i3sGuiLibrary
+# JanSharpsGuiLibrary
 This library is _control stage only_, it provides:
 * A ``gui-handler``
 * Implementations for all ``basic`` types (such as "button" or "choose-elem-button")
@@ -10,4 +10,4 @@ Classes define how the ``LuaGuiElement`` will look, and which children and what 
 
 The classes can very easily handle gui events. The ``basic`` class implementations even simplify handling events of nested children.
 
-**Read the [wiki](https://github.com/jan1i3/Jan1i3sGuiLibrary/wiki) for more information**
+**Read the [wiki](https://github.com/JanSharp/JanSharpsGuiLibrary/wiki) for more information**

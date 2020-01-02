@@ -1,5 +1,5 @@
 
-local modname = "Jan1i3sGuiLibrary"
+local modname = "JanSharpsGuiLibrary"
 
 return {
   modname = modname,

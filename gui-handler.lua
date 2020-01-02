@@ -1,7 +1,7 @@
 
 -- https://github.com/stevedonovan/LDoc
 
-local consts = require("__Jan1i3sGuiLibrary__/consts")
+local consts = require("__JanSharpsGuiLibrary__/consts")
 
 local gui_handler = {} -- return value
 local classes = {}
@@ -20,7 +20,7 @@ setmetatable(globals, {
   end
 })
 
-local event_names = require("__Jan1i3sGuiLibrary__/event-names")
+local event_names = require("__JanSharpsGuiLibrary__/event-names")
 for _, event_name in pairs(event_names) do
   event_handlers[event_name] = {}
 end
@@ -393,7 +393,7 @@ end
 return gui_handler
 
 
--- https://github.com/jan1i3/Jan1i3sGuiLibrary/wiki/Data-Structures
+-- https://github.com/JanSharp/JanSharpsGuiLibrary/wiki/Data-Structures
 
 ---@class GuiClassInstDefinition
 ---@class GuiClassInstChildDefinition
