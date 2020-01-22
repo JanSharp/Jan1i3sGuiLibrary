@@ -13,7 +13,3 @@ for _, func_name in pairs(consts.client_funcs) do
     end
   end)
 end
-
-script.on_event(defines.events.on_entity_died, function(event)
-  game.print(event.entity.name)
-end)
