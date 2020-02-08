@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.2
+Date: 2020.02.08
+  Changes:
+    - Normalized all require() paths
+  Bugfixes:
+    - Fix loading a save which never had guis in it modifies global and causes an error
+---------------------------------------------------------------------------------------------------
 Version: 0.18.1
 Date: 2020.01.22
   Info:

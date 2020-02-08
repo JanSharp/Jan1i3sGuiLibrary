@@ -1,7 +1,7 @@
 
 -- https://github.com/stevedonovan/LDoc
 
-local consts = require("__JanSharpsGuiLibrary__/consts")
+local consts = require("__JanSharpsGuiLibrary__/consts.lua")
 
 local gui_handler = {} -- return value
 local classes = {}
@@ -19,8 +19,11 @@ setmetatable(globals, {
     return globals[k]
   end
 })
+local function globals_initialized()
+  return global.__gui_handler ~= nil
+end
 
-local event_names = require("__JanSharpsGuiLibrary__/event-names")
+local event_names = require("__JanSharpsGuiLibrary__/event-names.lua")
 for _, event_name in pairs(event_names) do
   event_handlers[event_name] = {}
 end
@@ -364,11 +367,13 @@ do -- event handlers
 
   remote.add_interface("__" .. consts.modname .. "_" .. interface_index, {
     [consts.client_funcs.on_load] = function()
-      for _, inst in pairs(globals.instances) do
-        local class = classes[inst.class_name]
-        if not class then error("Missing gui class '" .. inst.class_name .. "'. Please register all classes before on_load and make sure migration is working properly.") end
-        setmetatable(inst, class)
-        add_event_handlers(inst)
+      if globals_initialized() then -- if they are not, accessing 'globals' would break the crc check, because it modifies 'global'
+        for _, inst in pairs(globals.instances) do
+          local class = classes[inst.class_name]
+          if not class then error("Missing gui class '" .. inst.class_name .. "'. Please register all classes before on_load and make sure migration is working properly.") end
+          setmetatable(inst, class)
+          add_event_handlers(inst)
+        end
       end
     end,
   })

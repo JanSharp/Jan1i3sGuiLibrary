@@ -1,7 +1,7 @@
 
-pcall(require, "__debugadapter__/debugadapter.lua")
+if script.active_mods["debugadapter"] then require('__debugadapter__/debugadapter.lua') end
 
-local consts = require("__JanSharpsGuiLibrary__/consts")
+local consts = require("__JanSharpsGuiLibrary__/consts.lua")
 
 for _, func_name in pairs(consts.client_funcs) do
   script[func_name](function()

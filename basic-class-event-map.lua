@@ -1,6 +1,6 @@
 
-local class_names = require("__JanSharpsGuiLibrary__/basic-class-names")
-local event_names = require("__JanSharpsGuiLibrary__/event-names")
+local class_names = require("__JanSharpsGuiLibrary__/basic-class-names.lua")
+local event_names = require("__JanSharpsGuiLibrary__/event-names.lua")
 
 -- note: this list might not be complete
 return {

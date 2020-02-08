@@ -1,7 +1,7 @@
 
-local gui_handler = require("__JanSharpsGuiLibrary__/gui-handler")
-local class_names = require("__JanSharpsGuiLibrary__/basic-class-names")
-local event_name_map = require("__JanSharpsGuiLibrary__/basic-class-event-map")
+local gui_handler = require("__JanSharpsGuiLibrary__/gui-handler.lua")
+local class_names = require("__JanSharpsGuiLibrary__/basic-class-names.lua")
+local event_name_map = require("__JanSharpsGuiLibrary__/basic-class-event-map.lua")
 
 local all_full_event_names = {}
 local all_fuller_event_names = {}
