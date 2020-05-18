@@ -1,4 +1,30 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.3
+Date: 2020.05.18
+  Info:
+    - IMPORTANT:
+      This mod will be unsupported once flib is released
+      (flib is a universal library)
+      Reasons:
+      While this mod simplifies guis in general, it also adds some complications
+      For example migration.
+      But also internally, for it to be "smart" and enable the features it has,
+      it has to do a lot more work when creating and deleting gui elements.
+      which is slow, and hurts performance when creating big, complex guis.
+      Additionally the mod has to store a lot of data in 'global'.
+      Which decreases save and load speed.
+      Also, having data per gui element in global means it has to be cleaned up
+      whenever a gui element gets destroyed, but gui elements can get destroyed
+      without the mod knowing about it, which means there would have to be a
+      periodic cleanup system running in the background (this is currently not even
+      implemented).
+      flib's gui module does less than this mod, which fixes all the issues this mod has.
+      with the only downside of a bit less sugar for the programmer.
+
+      With that out of the way, i may still implement all the missing features for this mod
+      before unsupporting it, but no guarantees.
+    - Remove debugadapter require
+---------------------------------------------------------------------------------------------------
 Version: 0.18.2
 Date: 2020.02.08
   Changes:

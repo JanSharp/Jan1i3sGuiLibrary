@@ -1,6 +1,4 @@
 
-if script.active_mods["debugadapter"] then require('__debugadapter__/debugadapter.lua') end
-
 local consts = require("__JanSharpsGuiLibrary__/consts.lua")
 
 for _, func_name in pairs(consts.client_funcs) do
