@@ -279,6 +279,7 @@ function gui_handler.destroy(inst)
         if children[i] == inst then
           -- has to table.remove, otherwise future destroys could fail
           table.remove(children, i)
+          break
         end
       end
     end
