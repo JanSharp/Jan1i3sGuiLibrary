@@ -1,7 +1,7 @@
 
 -- https://github.com/stevedonovan/LDoc
 
-local consts = require("__JanSharpsGuiLibrary__/consts.lua")
+local consts = require("__JanSharpsGuiLibrary__.consts")
 
 local gui_handler = {} -- return value
 local classes = {}
@@ -23,7 +23,7 @@ local function globals_initialized()
   return global.__gui_handler ~= nil
 end
 
-local event_names = require("__JanSharpsGuiLibrary__/event-names.lua")
+local event_names = require("__JanSharpsGuiLibrary__.event-names")
 for _, event_name in pairs(event_names) do
   event_handlers[event_name] = {}
 end

@@ -1,5 +1,5 @@
 
-local consts = require("__JanSharpsGuiLibrary__/consts.lua")
+local consts = require("__JanSharpsGuiLibrary__.consts")
 
 for _, func_name in pairs(consts.client_funcs) do
   script[func_name](function()
