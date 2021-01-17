@@ -49,9 +49,9 @@ local function add_event_handlers(inst)
 end
 
 --- removes all handlers for the given inst from event_handlers
+---@param index integer @ index of the element of the instance
 ---@param inst GuiClassInst
-local function remove_event_handlers(inst)
-  local index = inst.elem.index
+local function remove_event_handlers(index, inst)
   for _, event_name in pairs(event_names) do
     event_handlers[event_name][index] = nil
   end
@@ -244,6 +244,16 @@ function gui_handler.add_children(parent, children)
   end
 end
 
+--- cleans up and calls inst.on_destroy if it exists.
+---@param index integer
+---@param inst GuiClassInst
+local function destroy(index, inst)
+  globals.instances[index] = nil
+  remove_event_handlers(index, inst)
+  local func = inst.on_destroy
+  if func then func(inst) end
+end
+
 --- well, it's recursive.  
 --- calls inst.on_destroy on every child, and child of child if it exists.
 ---@param inst GuiClassInst
@@ -251,10 +261,20 @@ local function destroy_recursive(inst)
   for _, child in pairs(inst.children) do
     destroy_recursive(child)
   end
-  globals.instances[inst.elem.index] = nil
-  remove_event_handlers(inst)
-  local func = inst.on_destroy
-  if func then func(inst) end
+  destroy(inst.elem.index, inst)
+end
+
+--- destroy()s all instances with invalid elements
+function gui_handler.clear_invalid_instances()
+  local instances = globals.instances
+  local index, inst = next(instances)
+  while index do
+    local nk, nv = next(instances, index)
+    if not inst.elem.valid then
+      destroy(index, inst)
+    end
+    index, inst = nk, nv
+  end
 end
 
 --- destroys inst and all of it's children.  
@@ -263,8 +283,11 @@ end
 --- if inst is a child, it will remove itself from the parent.
 ---@param inst GuiClassInst
 function gui_handler.destroy(inst)
+  if not inst.elem.valid then
+    return gui_handler.clear_invalid_instances()
+  end
   destroy_recursive(inst)
-  if inst.elem.valid then inst.elem.destroy() end
+  inst.elem.destroy()
 
   local parent = inst.parent
   if parent then
