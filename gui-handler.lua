@@ -407,10 +407,7 @@ do -- event handlers
     local event_specific_handlers = event_handlers[event_name]
 
     script.on_event(defines.events["on_gui_" .. event_name], function(event)
-      -- if not event.element then return end -- needed for on_gui_closed and on_gui_opened
-      -- todo: optimize so it's not included in all other handlers, or just remove the 2
-      -- removed for now, see event-names.lua for more info
-
+      if not event.element then return end -- needed for on_gui_closed and on_gui_opened
       local inst = event_specific_handlers[event.element.index]
       if inst then
         inst[handler_name](inst, event)
